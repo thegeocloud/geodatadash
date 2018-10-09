@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+
+<!--        <script src="https://sdk.amazonaws.com/js/aws-sdk-2.5.3.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script type="text/javascript" src="lib/axios/dist/axios.standalone.js"></script>
+<script type="text/javascript" src="lib/CryptoJS/rollups/hmac-sha256.js"></script>
+<script type="text/javascript" src="lib/CryptoJS/rollups/sha256.js"></script>
+<script type="text/javascript" src="lib/CryptoJS/components/hmac.js"></script>
+<script type="text/javascript" src="lib/CryptoJS/components/enc-base64.js"></script>
+<script type="text/javascript" src="lib/url-template/url-template.js"></script>
+<script type="text/javascript" src="lib/apiGatewayCore/sigV4Client.js"></script>
+<script type="text/javascript" src="lib/apiGatewayCore/apiGatewayClient.js"></script>
+<script type="text/javascript" src="lib/apiGatewayCore/simpleHttpClient.js"></script>
+<script type="text/javascript" src="lib/apiGatewayCore/utils.js"></script>
+<script type="text/javascript" src="lib/apigClient.js"></script> -->
+	<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.4/mapbox-gl-draw.js'></script>
+	<script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+      <!-- Meta tags -->
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	  <script src="/js/addChartsCountry.js"></script>
+		<script src="/js/ProximityScoring.js"></script>
+		
+	  <script>
+	  <!--- OnClick of submit button get all user input and create an array ---->
+		
+
+      </script>
+	  
+      <!-- Meta tags -->
+      <!--stylesheets-->
+      <link href="css/style.css" rel='stylesheet' type='text/css' media="all">
+      <!--//style sheet end here-->
+      <link href="https://fonts.googleapis.com/css?family=Barlow:300,400,500" rel="stylesheet">
+<link rel="stylesheet" href="./css/style.css"    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.49.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.49.0/mapbox-gl.css' rel='stylesheet' />
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js'></script>
+  <style>
+    #map { }
+  </style>
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<style>
+.LayersName:after {
+    content: ""; /* This is necessary for the pseudo element to work. */ 
+    display: block; /* This will put the pseudo element on its own line. */
+    margin: 0 auto; /* This will center the border. */
+    width: 90%; /* Change this to whatever width you want. */
+    padding-top: 10px; /* This creates some space between the element and the border. */
+    border-bottom: 1px solid gray; /* This creates the border. Replace black with whatever color you want. */
+}
+</style>
+
+<script src="/js/addChartsStates.js"></script>
+<script src="/js/addChartsCounties.js"></script>
+<script src="/js/addChartsCountry.js"></script>
+<script>
+
+function createForm() {
+
+document.getElementById("survey").disabled = false;
+document.getElementById("form holder").setAttribute('style', "overflow: scroll; width: 40%; height: 100%; background-color: white; float:middle; border: 1px solid gray;")
+document.getElementById("add form button").setAttribute('style', "display: table; width: 5%; height: 100%; background-color: #f08080; float:middle; cursor: pointer; padding-left: 0% ")
+document.getElementById("add form button").setAttribute('onclick', 'get_user_input()')
+document.getElementById("add report font").innerHTML = 'Save'
+document.getElementById("map").setAttribute('style', "width: 40%; height: 100%; background-color: white; float:middle; border: 1px solid gray;")
+
+};
+
+
+</script>
+<script>
+
+function renderMap () {
+
+mapboxgl.accessToken = 'pk.eyJ1IjoidGhlZ2VvY2xvdWQiLCJhIjoiY2ptcjIyamF5MDd1azNrcGQwMjZ6cmkyOCJ9.9eKzVZiJ-c8Sva8945FhFg';
+const map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/thegeocloud/cjmr5abx27ur82qpjoc95f5l5',
+  center: [-116.870766, 32.813383],
+  interactive: true,
+  zoom: 5.0
+});
+
+map.on('load', function () {
+
+// Create a Draw control
+var draw = new MapboxDraw({
+  defaultMode: 'draw_point',
+  controls: {
+		line_string: false,
+		polygon: false,
+		combine_features: false,
+		uncombine_features: false,
+		point: false,
+		trash: false
+		}
+  // Adds the LotsOfPointsMode to the built-in set of modes
+});
+
+map.addControl(draw);
+
+map.on('click', function(e) {
+
+	sessionStorage.setItem("survey_input", JSON.stringify(draw.getAll()))
+	raw = JSON.parse(sessionStorage.survey_input);
+	console.log(raw)
+	
+});
+
+<!-- Event listeners for turning layers on and off
+
+
+        map.getCanvas().style.cursor = 'pointer';
+
+			
+			
+
+
+});
+function add_returned_poly(){
+				
+				function delay_poly(){
+				if (document.getElementById("add report font").innerHTML == 'Create') {
+				console.log("add poly run")
+					returned_poly = JSON.parse(sessionStorage.alerted)
+						
+						id_number = Math.floor(Math.random() * 10000)
+						console.log(id_number)
+						sourceName = 'alerts' + id_number.toString()
+						
+							map.addSource(sourceName, {
+							"type": "geojson",
+							"data": returned_poly
+						});
+					
+					layerName = 'layer' + sourceName
+					 map.addLayer({
+							'id': layerName,
+							'type': 'fill',
+							'source': sourceName,
+							'layout': {},
+							'paint': {
+								'fill-color': '#f00',
+								'fill-opacity': 0.3
+							},
+							'filter': ["none"]
+						});
+
+				}
+				
+			}
+	}
+
+document.getElementById("add form button").addEventListener("click", add_returned_poly)		
+}; <!--- End of map renderfunciton
+
+</script>
+
+<script>
+
+
+
+</script>
+
+</head>
+<body onload="renderMap()">
+
+<!------------ Navigation bar-->
+
+	<div class="" style="background-color: black; display: flex; flex-wrap: wrap; height: 50px">
+	
+		<div style="display: table; width: 5%; height: 100%; background-color: black; float:middle;">
+		  <div style="display: table-cell; vertical-align: middle;">
+			<div style="padding-left:20px";>
+			  <img src="view.png" alt="HTML tutorial" style="width:42px;height:42px;border:0;">
+			</div>
+		  </div>
+		</div>
+		<div style="display: table; width: 1%; height: 100%; background-color: black; float:middle;">
+		  <div style="display: table-cell; vertical-align: middle;">
+			<div>
+			  <font color="white">GeoDataDash</font>
+			</div>
+		  </div>
+		</div>
+		<div type="button" onclick="window.location='http://192.168.0.34:8090/index.html'"  style="display: table; width: 10%; height: 100%; background-color: black; float:middle; cursor: pointer;">
+		  <div style="display: table-cell; vertical-align: middle;">
+			<div align="center">
+			  <font color="gray">Dashboard</font>
+			</div>
+		  </div>
+		</div>
+		<div type="button" onclick="window.location='http://192.168.0.34:8090/reports.html'"  style="display: table; width: 10%; height: 100%; background-color: black; float:middle;">
+		  <div style="display: table-cell; vertical-align: middle;">
+			<div align="center">
+			  <font color="gray">Report</font>
+			</div>
+		  </div>
+		</div>
+		<div style="display: table; width: 10%; height: 100%; background-color: black; float:middle;">
+		  <div style="display: table-cell; vertical-align: middle;">
+			<div align="center">
+			  <font color="gray">Cases</font>
+			</div>
+		  </div>
+		</div>
+		<div style="display: table; width: 10%; height: 100%; background-color: black; float:middle;">
+		  <div style="display: table-cell; vertical-align: middle;">
+			<div align="center">
+			  <font color="gray">Map</font>
+			</div>
+		  </div>
+		</div>
+		<div style="display: table; width: 10%; height: 100%; background-color: black; float:middle;">
+		  <div style="display: table-cell; vertical-align: middle;">
+			<div align="center">
+			  <font color="gray">Analytics</font>
+			</div>
+		  </div>
+		</div>		
+		
+
+	</div>
+
+
+<!------------ Overview stats (alerts, hotspots, etc-->
+<div style="background-color: white; height: 40px">
+
+</div>
+
+
+<!------------ Map and layers section-->
+<div style="background-color: white; height: 40px; display: flex; flex-wrap: wrap;">
+		<div style="display: table; width: 20%; height: 100%; background-color: white; float:middle;  padding-left: 0%; padding-top: 1% padding-bottom: 1%;">
+		  <div style="display: table-cell; vertical-align: top;">
+			<div align="left">
+			  <font color="gray"></font>
+			</div>
+		  </div>
+		</div>
+	<div type="button" onclick="createForm()" id = 'add form button' style="display: table; width: 5%; height: 100%; background-color: gray; float:middle; cursor: pointer; padding-left: 0%; ">
+		  <div style="display: table-cell; vertical-align: middle;">
+			<div align="center">
+			  <font id="add report font" color="black">Create</font>
+			</div>
+		  </div>
+		</div>
+
+<script>
+
+</script>
+
+</div>
+	<div class="" style="background-color: white; display: flex; flex-wrap: wrap; height: 500px; padding-left: 20% " >
+		
+		<!------------ Layers section-->
+		<div id = 'form holder' style="overflow: hidden; width: 40%; height: 100%; background-color: white; float:middle; border: 1px solid gray">
+
+		
+			<fieldset id="survey" disabled>
+			<div><div><p>1. Did you witness the signs or indications of human trafficking?</p><p>Read up on some of the signs 
+				<a href="https://polarisproject.org/human-trafficking/recognize-signs">here</a></p><div><input id="yes" name="check" type="radio" value="item 1"/><label>
+                  Yes
+                  </label></div><div><input id="no" name="check" type="radio" value="item 2"/><label>
+                  No
+                  </label></div></div><div><p></p><p>2. What public or private system was involved?</p><p>You can review review the systems <a href="https://polarisproject.org/sites/default/files/Typology%20and%20Intersections%20Matrix.pdf">here</a></p><input list="intersections" name="systems rypw" id="systems"/><datalist id="intersections">
+					<option value="Business Regulatory Systems">
+					</option><option value="Financial Services Industry">
+					</option><option value="Hotels & Motels">
+					</option><option value="Housing & Homelesness Systems">
+					</option><option value="Health Care">
+					</option><option value="Social Media">
+					</option><option value="Temporary Work Visas">
+					</option><option value="Transportation">
+               </option></datalist></div><div><p>3. What type of trafficking was witnessed?</p><p>You can review the 25 business models of human trafficking <a href="https://polarisproject.org/sites/default/files/Typology%20and%20Intersections%20Matrix.pdf">here</a></p><input list="business models" name="models" id="business mods"/><datalist id="business models"><option value="Escort Services">
+					</option><option value="Illicit Massage Busines">
+					</option><option value="Outdoor Solicitation">
+					</option><option value="Residential Sex Trafficking">
+					</option><option value="Domestic Work">
+					</option><option value="Bars, Strip Clubs, & Cantinas">
+					</option><option value="Pornography">
+					</option><option value="Traveling Sales Crews">
+					</option><option value="Restaurants & Food Service">
+					</option><option value="Peddling & Begging">
+					</option><option value="Agriculture & Animal Husbandry">
+					</option><option value="Personal Sexual Servitude">
+					</option><option value="Health & Beauty Services">
+					</option><option value="Construction">
+					</option><option value="Hospitality">
+					</option><option value="Landscaping">
+					</option><option value="Illicit Activities">
+					</option><option value="Arts, Sports, & Entertainment">
+					</option><option value="Commercial Cleaning Services">
+					</option><option value="Factories & Manufacturing">
+					</option><option value="Remote Interactive Sexual Acts">
+					</option><option value="Carnivals">
+					</option><option value="Forestry & Logging">
+					</option><option value="Health Care">
+					</option><option value="Recreational Facilities">
+               </option></datalist></div>
+			   <div><p>4. How many potential victims?</p>
+			   <input list="number of victims" name="victims" id="num victims"/>
+			   <datalist id="number of victims">
+			   <option value="1">
+					</option><option value="2">
+					</option><option value="3">
+					</option><option value="4">
+					</option><option value="5">
+					</option><option value="More than 5">
+
+
+               </option></datalist></div><div><p>5. What is the age of the potential victims?</p><input list="age of potential victims" name="agevictim" id="age victims"/><datalist id="age of potential victims"><option value="10 - 19">
+					</option><option value="20 - 29">
+					</option><option value="30 - 39">
+					</option><option value="40 - 49">
+					</option><option value="50 - 59">
+					</option><option value="60 - 69">
+					</option><option value="70 - 79">
+					</option><option value="80 - 89">
+					</option><option value="90 - 100">
+
+               </option></datalist></div><div><p>6. What is the gender of the potential victim?</p><input list="gender of victim" name="gender victim" id="gender victim"/><datalist id="gender of victim"><option value="Male">
+					</option><option value="Female">
+
+
+               </option></datalist></div><div><p>Please decribe the appearance of the victim (hair color, ethnicity, height, clothing)</p><textarea name="Message" placeholder="" required="" id="victim appearance"></textarea></div><div><p>7. How many potential traffickers?</p><input list="number of trafficker" name="appearnce" id="num trafficker"/><datalist id="number of trafficker"><option value="1">
+					</option><option value="2">
+					</option><option value="3">
+					</option><option value="4">
+					</option><option value="5">
+					</option><option value="More than 5">
+
+               </option></datalist></div><div><p>8. What is the age of the potential traffickers?</p><input list="age of trafficker" name="trafficker age" id="age trafficker"/><datalist id="age of trafficker"><option value="10 - 19">
+					</option><option value="20 - 29">
+					</option><option value="30 - 39">
+					</option><option value="40 - 49">
+					</option><option value="50 - 59">
+					</option><option value="60 - 69">
+					</option><option value="70 - 79">
+					</option><option value="80 - 89">
+					</option><option value="90 - 100">
+
+               </option></datalist></div><div><p>9. What is the gender of the trafficker?</p><input list="gender of trafficker" name="gender trafficker" id="gender trafficker"/><datalist id="gender of trafficker"><option value="Male">
+					</option><option value="Female">
+               </option></datalist></div><div><p>Please decribe the appearance of the potential traffickers(hair color, ethnicity, height, clothing)</p><textarea name="description" id="describe trafficker"></textarea></div><div><p>Please note any addtional observations or conerns</p><textarea id="observations"></textarea></div><div>
+            </div>
+			
+			</div>
+			</div>
+			
+			<!------------ Map section-->
+		<div style="width: 40%; height: 100%; background-color: white; float:middle; border: 1px solid gray; pointer-events:none; cursor: pointer;" id="map">
+
+		</div>
+			</div>
+			
+		
+			
+
+<!------------Charts-->
+
+</body>
+<html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

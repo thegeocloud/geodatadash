@@ -1,0 +1,38 @@
+	<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js'></script>
+	<div class="" style="background-color: white; display: flex; flex-wrap: wrap; height: 218px">
+
+		<div style="display: table; width: 10%; height: 100%; background-color: white; float:middle; padding-left: 19%;">
+		  <div style="display: table-cell; vertical-align: middle;">
+			<div>
+			  <font color="white">tem</font>
+			</div>
+		  </div>
+		</div>
+ 
+		<div>
+			<canvas id="PieChart" width="415" height="225"></canvas>
+		</div>
+
+		<div>
+			<canvas id="BarChart" width="415" height="225"></canvas>
+		</div>
+		
+		<div>
+			<canvas id="LineChart" width="415" height="225"></canvas>
+		</div>
+	</div>
+<script src="/js/addChartsCountry.js"></script>
+<script>
+
+county_name = "Clallam"
+county_code = "53"
+full = [county_code, county_name]
+
+getCountryLineChartData(full);
+getCountryBarChartData(full)
+getCountryPieChartData(full)
+</script>

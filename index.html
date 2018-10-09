@@ -1,0 +1,722 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<link rel="stylesheet" href="./css/style.css"    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.49.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.49.0/mapbox-gl.css' rel='stylesheet' />
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js'></script>
+  <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+  <style>
+    #map { }
+  </style>
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<style>
+.LayersName:after {
+    content: ""; /* This is necessary for the pseudo element to work. */ 
+    display: block; /* This will put the pseudo element on its own line. */
+    margin: 0 auto; /* This will center the border. */
+    width: 90%; /* Change this to whatever width you want. */
+    padding-top: 10px; /* This creates some space between the element and the border. */
+    border-bottom: 1px solid gray; /* This creates the border. Replace black with whatever color you want. */
+}
+</style>
+
+<script src="/js/addChartsStates.js"></script>
+<script src="/js/addChartsCounties.js"></script>
+<script src="/js/addChartsCountry.js"></script>
+<script>
+function showLegend() {
+
+document.getElementById("survey").disabled = false;
+document.getElementById("form holder").setAttribute('style', "overflow: scroll; width: 40%; height: 100%; background-color: white; float:middle; border: 1px solid gray;")
+document.getElementById("add form button").setAttribute('style', "display: table; width: 5%; height: 100%; background-color: #f08080; float:middle; cursor: pointer; padding-left: 0% ")
+document.getElementById("add form button").setAttribute('onclick', 'get_user_input()')
+document.getElementById("add report font").innerHTML = 'Save'
+document.getElementById("map").setAttribute('style', "width: 40%; height: 100%; background-color: white; float:middle; border: 1px solid gray;")
+
+};
+</script>
+
+
+<script>
+
+function renderMap () {
+mapboxgl.accessToken = 'pk.eyJ1IjoidGhlZ2VvY2xvdWQiLCJhIjoiY2ptcjIyamF5MDd1azNrcGQwMjZ6cmkyOCJ9.9eKzVZiJ-c8Sva8945FhFg';
+const map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/thegeocloud/cjmr5abx27ur82qpjoc95f5l5',
+  center: [-98.5795, 39.828175 ],
+  zoom: 3.0
+});
+
+map.on('load', function () {
+
+
+<!-- Add feature collection as source first
+map.addSource("usstates", {
+        "type": "geojson",
+        "data": '/geographies/stategeojson.json'
+    });
+
+map.addSource("state_data", {
+        "type": "geojson",
+        "data": '/geographies/data/states.csv'
+    });
+	
+<!-- Then add that to the map. 
+ 
+ map.addLayer({
+        'id': 'states',
+        'type': 'fill',
+        'source': 'usstates',
+        'layout': {},
+        'paint': {
+            'fill-color': '#003366',
+            'fill-opacity': 0.3
+        },
+		'filter': ["none"]
+    });
+		
+
+<!-- Counties
+map.addSource("uscounties", {
+        "type": "geojson",
+        "data": '/geographies/counties.json'
+    });
+	
+ map.addLayer({
+        'id': 'counties',
+        'type': 'fill',
+        'source': 'uscounties',
+        'layout': {},
+        'paint': {
+            'fill-color': '#2E0854',
+            'fill-opacity': 0.3
+        },
+		'filter': ["none"]
+    });
+
+map.setLayoutProperty('counties', 'visibility', 'none')	
+
+<!-- Cities
+map.addSource("cities", {
+        "type": "geojson",
+        "data": '/geographies/us_cities.json'
+    });
+	
+ map.addLayer({
+        'id': 'us_cities',
+        'type': 'fill',
+        'source': 'cities',
+        'layout': {},
+        'paint': {
+            'fill-color': '#598234',
+            'fill-opacity': 0.3
+        },
+		'filter': ["none"]
+    });
+	
+map.setLayoutProperty('us_cities', 'visibility', 'none')	
+
+
+				if (sessionStorage.alerted) {
+				console.log("adding new polygon")
+					returned_poly = JSON.parse(sessionStorage.alerted)
+					
+							map.addSource("alerts", {
+							"type": "geojson",
+							"data": returned_poly
+						});
+						
+					 map.addLayer({
+							'id': 'alert',
+							'type': 'fill',
+							'source': 'alerts',
+							'layout': {},
+							'paint': {
+								'fill-color': '#f00',
+								'fill-opacity': 0.3
+							},
+							'filter': ["none"]
+						});
+
+				for (num in returned_poly.geometry.coordinates[0]) {
+				
+						returned_poly.geometry.coordinates[0][num][0] = parseFloat(returned_poly.geometry.coordinates[0][num][0])
+						returned_poly.geometry.coordinates[0][num][1] = parseFloat(returned_poly.geometry.coordinates[0][num][1])
+				}
+				
+				var center = turf.centerOfMass(returned_poly);
+				var center_coor = center.geometry.coordinates
+	
+				map.flyTo({
+				// These options control the ending camera position: centered at
+				// the target, at zoom level 9, and north up.
+
+				
+				center: center_coor,
+				zoom: 9,
+				bearing: 0,
+
+				// These options control the flight curve, making it move
+				// slowly and zoom out almost completely before starting
+				// to pan.
+				speed: 0.4, // make the flying slow
+				curve: 1, // change the speed at which it zooms out
+
+				// This can be any easing function: it takes a number between
+				// 0 and 1 and returns another number between 0 and 1.
+				easing: function (t) {
+					return t;
+				}
+			});
+			
+			function addPop() {
+			var popup = new mapboxgl.Popup({closeOnClick: false})
+				.setLngLat(center_coor)
+				.setHTML('<div align="center" ><font color="Red">TRAFFICKING </br> ALERT!</font></div>')
+				.addTo(map);
+				}
+				
+				setTimeout(addPop, 4000)
+				
+				}
+				
+});
+
+
+
+
+<!-- Event listener switching between layer elements
+
+	
+<!-- Event listeners for turning layers on and off
+
+document.getElementById("statecb").addEventListener("click", toggleLayer)
+document.getElementById("countiescb").addEventListener("click", toggleLayer)
+document.getElementById("citiescb").addEventListener("click", toggleLayer)
+document.getElementById("alertscb").addEventListener("click", toggleLayer)
+document.getElementById("hotspotscb").addEventListener("click", toggleLayer)
+document.getElementById("trendscb").addEventListener("click", toggleLayer)
+
+
+function toggleLayer() {
+
+var clickedLayer = this.value
+var all_layers = ['states', 'counties', 'us_cities']
+var turn_off_layers = all_layers.filter(item => item != clickedLayer)
+
+for (lyr in turn_off_layers) {
+	map.setLayoutProperty(turn_off_layers[lyr], 'visibility', 'none')
+	
+	if (turn_off_layers[lyr] == 'states') {
+		document.getElementById("statecb").checked = false;
+		if (map.getLayer('path')) {
+			map.removeLayer("path")
+			map.removeSource("path")
+		}
+	}
+	
+	if (turn_off_layers[lyr] == 'counties') {
+		document.getElementById("countiescb").checked =false;
+		if (map.getLayer('path')) {
+			map.removeLayer("path")
+			map.removeSource("path")
+		}
+	}
+	
+	if (turn_off_layers[lyr] == 'us_cities') {
+		document.getElementById("citiescb").checked = false;
+		if (map.getLayer('path')) {
+			map.removeLayer("path")
+			map.removeSource("path")
+		}
+	}
+	
+} <!--- End of toogle layers function
+
+var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
+
+        if (visibility === 'visible') {
+            map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+        } else {
+            map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+        }
+		
+
+}
+
+
+    // STATE When a click event occurs run function for getting state repots
+	
+    map.on('click', 'states', function (e) {
+
+
+        var state_name = e.features[0].properties.NAME;
+		console.log(state_name)
+		map.setFilter('states', ['!in', 'NAME', e.features[0].properties.NAME]);
+
+		<!--- Add retrieved report data to feature collection
+	
+	$.getJSON( "geographies/data/states.json", function( data ) {
+			<!-- Remove point layers if they exist already
+			var state_created = map.getLayer('path')
+			if (state_created) {
+				map.removeLayer("path")
+				map.removeSource("path")
+				}
+			for (var s in data["all"]) {
+
+				if (data["all"][s]["name"] == state_name)
+					{
+					coors = data["all"][s]["coors"]
+					const allPoints = coors.map(point => ({
+					type: 'Feature',
+					geometry: {
+						type: 'Point',
+						coordinates: point
+					}
+				}));
+			
+			
+				map.addLayer({
+					id: 'reports',
+					type: 'circle',
+					paint: {
+						'circle-color' : '#f00',
+						'circle-radius' : {'base' : 2, 'stops' : [[12, 2]]}
+						},
+					source: {
+						type: 'geojson',
+						data: {
+							type: 'FeatureCollection',
+							features: allPoints
+						}
+					}
+				});
+
+				map.addLayer({
+					id: 'path',
+					type: 'circle',
+					paint: {
+									'circle-color' : '#f00',
+									'circle-radius' : {'base' : 2, 'stops' : [[12, 2]]}
+									},
+					source: {
+						type: 'geojson',
+						data: {
+							type: 'FeatureCollection',
+							features: allPoints
+						}
+					}
+				});					
+				
+				map.removeLayer("reports")
+				map.removeSource("reports")	
+				
+				state_created = map.getLayer("path")
+			
+				} <!-- End of i0ff statement for state name
+				
+			} <!-- End of for loop
+		
+			}) <!--- end of getting data
+		 	
+		getStateLineChartData(state_name)
+		getStateBarChartData(state_name)
+		getStatePieChartData(state_name)
+	}); <!--- End of map.onclick method
+		
+    // Change the cursor to a pointer when the mouse is over the places layer.
+    map.on('mouseenter', 'states', function () {
+        map.getCanvas().style.cursor = 'pointer';
+    });
+
+    // Change it back to a pointer when it leaves.
+    map.on('mouseleave', 'states', function () {
+        map.getCanvas().style.cursor = '';
+    });
+
+	
+	
+	
+    // COUNTY DATA	
+
+    map.on('click', 'counties', function (e) {
+        var county_name = e.features[0].properties.NAME;
+		var county_code = e.features[0].properties.STATE
+		// Get full name of county and washington
+		full = [county_code, county_name]
+		console.log(full)
+			county_name = full[1]
+			county_code = full[0]
+			state_name = ''
+			
+			for (var num in state_codes) {
+				
+				if (state_codes[num]["STATE"] == county_code) {
+					
+					state_name = state_codes[num]["NAME"]
+			
+				}
+			};
+				
+			full_name = state_name + '-' + county_name
+			
+		map.setFilter('counties', ['!in', 'NAME', e.features[0].properties.NAME]);
+
+		<!--- Add retrieved report data to feature collection
+	
+		
+	$.getJSON( "geographies/data/counties.json", function( data ) {
+			<!-- Remove point layers if they exist already
+			state_created = map.getLayer("path")
+			county_created = map.getLayer("path")
+			if (county_created || state_created) {
+				map.removeLayer("path")
+				map.removeSource("path")
+				}
+			for (var s in data["all"]) {
+
+				if (data["all"][s]["name"] == full_name)
+					{
+					coors = data["all"][s]["coors"]
+					const allPoints = coors.map(point => ({
+					type: 'Feature',
+					geometry: {
+						type: 'Point',
+						coordinates: point
+					}
+				}));
+			
+			console.log(allPoints)
+			
+				map.addLayer({
+					id: 'reports',
+					type: 'circle',
+					paint: {
+						'circle-color' : '#f00',
+						'circle-radius' : {'base' : 2, 'stops' : [[12, 2]]}
+						},
+					source: {
+						type: 'geojson',
+						data: {
+							type: 'FeatureCollection',
+							features: allPoints
+						}
+					}
+				});
+
+				map.addLayer({
+					id: 'path',
+					type: 'circle',
+					paint: {
+									'circle-color' : '#f00',
+									'circle-radius' : {'base' : 2, 'stops' : [[12, 2]]}
+									},
+					source: {
+						type: 'geojson',
+						data: {
+							type: 'FeatureCollection',
+							features: allPoints
+						}
+					}
+				});					
+				
+				map.removeLayer("reports")
+				map.removeSource("reports")	
+				
+				county_created = map.getLayer("path")
+				} <!-- End of i0ff statement for state name
+				
+			} <!-- End of for loop
+		
+			})
+	
+	 <!--- end of getting data
+		 	
+		getCountyLineChartData(county_name)
+		getCountyBarChartData(county_name)
+		getCountyPieChartData(county_name)
+	}); <!--- End of map.onclick method
+	
+		
+    // Change the cursor to a pointer when the mouse is over the places layer.
+    map.on('mouseenter', 'counties', function () {
+        map.getCanvas().style.cursor = 'pointer';
+    });
+
+    // Change it back to a pointer when it leaves.
+    map.on('mouseleave', 'counties', function () {
+        map.getCanvas().style.cursor = '';
+    });
+
+	
+	    // CITY DATA
+	
+    map.on('click', 'us_cities', function (e) {
+
+		map.setFilter('us_cities', ['!in', 'city', e.features[0].properties.city]);
+		 
+
+
+		getCountryLineChartData()
+		getCountryBarChartData()
+		getCountryPieChartData()
+
+	
+
+		 
+	});
+		
+    // Change the cursor to a pointer when the mouse is over the places layer.
+    map.on('mouseenter', 'us_cities', function () {
+        map.getCanvas().style.cursor = 'pointer';
+    });
+
+    // Change it back to a pointer when it leaves.
+    map.on('mouseleave', 'us_cities', function () {
+        map.getCanvas().style.cursor = '';
+    });
+	
+	
+	
+	
+getCountryLineChartData()
+getCountryBarChartData()
+getCountryPieChartData()
+	
+	
+	
+}; <!--- End of map load funciton
+
+</script>
+
+<script>
+
+
+
+</script>
+
+</head>
+<body onload="renderMap();" style="height: 100%; width: 100%;">
+
+<!------------ Navigation bar-->
+
+	<div class="" style="background-color: black; display: flex; flex-wrap: wrap; height: 50px">
+	
+		<div style="display: table; width: 5%; height: 100%; background-color: black; float:middle;">
+		  <div style="display: table-cell; vertical-align: middle;">
+			<div style="padding-left:20px";>
+			  <img src="view.png" alt="HTML tutorial" style="width:60px;height:42px;border:0;">
+			</div>
+		  </div>
+		</div>
+		<div style="display: table; width: 1%; height: 100%; background-color: black; float:middle;">
+		  <div style="display: table-cell; vertical-align: middle;">
+			<div>
+			  <font color="white">GeoDataDash</font>
+			</div>
+		  </div>
+		</div>
+		<div type="button" onclick="window.location='http://192.168.0.34:8090/index.html'" style="display: table; width: 10%; height: 100%; background-color: black; float:middle; cursor: pointer;">
+		  <div style="display: table-cell; vertical-align: middle;">
+			<div align="center">
+			  <font color="gray">Dashboard</font>
+			</div>
+		  </div>
+		</div>
+		<div type='button' onclick="window.location='http://192.168.0.34:8090/reports.html'" style="display: table; width: 10%; height: 100%; background-color: black; float:middle; cursor: pointer;">
+		  <div style="display: table-cell; vertical-align: middle;">
+			<div align="center">
+			  <font color="gray">Report</font>
+			</div>
+		  </div>
+		</div>
+		<div style="display: table; width: 10%; height: 100%; background-color: black; float:middle;">
+		  <div style="display: table-cell; vertical-align: middle;">
+			<div align="center">
+			  <font color="gray">Cases</font>
+			</div>
+		  </div>
+		</div>
+		<div style="display: table; width: 10%; height: 100%; background-color: black; float:middle;">
+		  <div style="display: table-cell; vertical-align: middle;">
+			<div align="center">
+			  <font color="gray">Map</font>
+			</div>
+		  </div>
+		</div>
+		<div style="display: table; width: 10%; height: 100%; background-color: black; float:middle;">
+		  <div style="display: table-cell; vertical-align: middle;">
+			<div align="center">
+			  <font color="gray">Analytics</font>
+			</div>
+		  </div>
+		</div>		
+		
+
+	</div>
+
+
+<!------------ Overview stats (alerts, hotspots, etc-->
+<div style="background-color: white; height: 20px">
+
+</div>
+<div class="" style="background-color: white; display: flex; flex-wrap: wrap; height: 50px ;padding-left: 17%;">
+	
+		<div style="display: table; width: 20%; height: 100%; background-color: white; border-style: solid; border-color: gray; float:middle;">
+		  <div style="display: table-cell; vertical-align: top;">
+			<div align="center">
+			  <font color="Red">ALERTS</br>23</font>
+			</div>
+		  </div>
+		</div>
+		<div style="display: table; width: 20%; height: 100%; background-color: white; border-style: solid; border-color: gray; float:middle;">
+		  <div style="display: table-cell; vertical-align: top;">
+			<div align="center">
+			  <font color="black">TRENDS</br>8</font>
+			</div>
+		  </div>
+		</div>
+		<div style="display: table; width: 20%; height: 100%; background-color: white; border-style: solid;border-color: gray; float:middle;">
+		  <div style="display: table-cell; vertical-align: top;">
+			<div align="center">
+			  <font color="black">HOTSPOTS</br>40</font>
+			</div>
+		  </div>
+		</div>
+			<div style="display: table; width: 20%; height: 100%; background-color: white; border-style: solid; border-color: gray; float:middle;">
+		  <div style="display: table-cell; vertical-align: top;">
+			<div align="center">
+			  <font color="black">TOTAL COUNT</br>210,435</font>
+			</div>
+		  </div>
+		</div>
+	</div>
+
+<!------------ Map and layers section-->
+<div style="background-color: white; height: 40px;">
+		<div style="display: table; width: 90%; height: 100%; background-color: white; float:middle;  padding-left: 62%; padding-top: 1%">
+		  <div style="display: table-cell; vertical-align: top;">
+			<div align="left">
+			  <font color="gray">Location: United States  >  California  >  San Diego  >  San Diego</font>
+			</div>
+		  </div>
+		</div>
+</div>
+	<div class="" style="background-color: white; display: flex; flex-wrap: wrap; height: 500px; padding-left: 17%">
+		
+		<!------------ Layers section-->
+		<div style="display: table; width: 20%; height: 100%; background-color: white; float:middle;">
+			<!------------ Layer headers section-->
+		  <div style="display: table-cell; vertical-align: top; display: flex; flex-wrap: wrap;" >
+		  <div type="button" style="padding-left: 20%; padding-top: 5%; cursor: pointer;">
+			  <font color="gray" face="verdana" id="info">Info</font>
+			</div>
+			<div type="button" style="padding-left: 10%; padding-top: 5%; cursor: pointer;">
+			  <font color="gray" face="verdana" id="layers" onclick="myFunction()" >Layers</font>
+			</div>
+			<div type="button" onclick="" style="padding-left: 10%; padding-top: 5%; cursor: pointer;">
+			  <font color="gray" face="verdana" id="legend">Legend</font>
+			</div>
+		  </div>
+		  <div style="display: table-cell; vertical-align: top; display: flex; flex-wrap: wrap;" class="LayersName">
+		  <div style="padding-left: 5%; padding-top: 5%;">
+			  <font color="gray" face="verdana">Layers</font>
+			</div>
+		  </div>
+		  <div id="Layers" >
+		  	<div style="display: table; width: 10%; height: 10%; background-color: white; float:middle;">
+		  <div style="display: table-cell; vertical-align: middle;">
+			<div style="padding-left:20px";>
+			  <img src="legend.png" style="width:px;height:0px;border:0;">
+			</div>
+		  </div>
+		</div>
+		  <div type="button" style="padding-left: 10%; padding-top: 5%;" >
+			  <input style="cursor: pointer;" type="checkbox" id="statecb" name="" value="states" checked><font color="darkgray" face="verdana">States</font><br>
+			</div>
+			<div type="button" style="padding-left: 10%; padding-top: 5%;">
+			  <input style="cursor: pointer;"type="checkbox" id="countiescb" name="" value="counties"><font color="darkgray" face="verdana">Counties</font><br>
+			</div>
+			<div type="button" style="padding-left: 10%; padding-top: 5%;">
+			  <input style="cursor: pointer;" type="checkbox" id="citiescb" name="" value="us_cities"><font color="darkgray" face="verdana">Cities</font><br>
+			</div>
+			<div type="button" style="padding-left: 10%; padding-top: 5%; ">
+			  <input style="cursor: pointer;"  type="checkbox" id="alertscb" name="" value="alerts"><font color="darkgray" face="verdana">Alerts</font><br>
+			</div>
+			<div type="button" style="padding-left: 10%; padding-top: 5%;">
+			  <input style="cursor: pointer;"  type="checkbox" id="hotspotscb" name="" value="hotspot"><font color="darkgray" face="verdana">Hotspot</font><br>
+			</div>
+			<div type="button" style="padding-left: 10%; padding-top: 5%; cursor: pointer;">
+			  <input style="cursor: pointer;" type="checkbox" id="trendscb" name="" value="trends"><font color="darkgray" face="verdana">Trends</font><br>
+			</div>
+
+		  </div>
+		</div>
+		
+		<!------------ Map section-->
+		<div style="width: 60%; height: 100%; background-color: white; float:middle; border: 1px solid gray" id="map">
+
+		</div>
+	
+	</div>
+
+<!------------Charts-->
+<div style="display: flex; flex-wrap: wrap; background-color: white;  height: 20px;">
+
+		</div>
+
+	<div class="" style="background-color: white; display: flex; flex-wrap: wrap; height: 218px">
+
+		<div style="display: table; width: 10%; height: 100%; background-color: white; float:middle; padding-left: 17%;">
+		  <div style="display: table-cell; vertical-align: middle;">
+			<div>
+			  <font color="white">tem</font>
+			</div>
+		  </div>
+		</div>
+ 
+		<div>
+			<canvas id="PieChart" width="415" height="225"></canvas>
+		</div>
+
+		<div>
+			<canvas id="BarChart" width="415" height="225"></canvas>
+		</div>
+		
+		<div>
+			<canvas id="LineChart" width="415" height="225"></canvas>
+		</div>
+	</div>
+
+</body>
+<html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
